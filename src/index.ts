@@ -43,6 +43,8 @@ export interface ControlMutationSpec<T> {
   apply: () => Promise<T>;
   /** Re-apply a previously-captured value (the revert primitive). */
   revertTo: (prev: T) => Promise<void>;
+  /** Existing audit id this mutation is reverting, when the consumer is a durable revert verb. */
+  revertOf?: string;
   /** Post-apply proof the change took effect. Omit for a mutation with no external check. */
   verify?: (next: T) => Promise<ControlVerify> | ControlVerify;
   /** dryRun preview: describe what WOULD change, given the current value, WITHOUT applying. */
@@ -167,6 +169,7 @@ export async function runControlMutation<T>(
     next,
     verify,
     reverted,
+    revertOf: spec.revertOf,
   });
 
   const outcome: ControlOutcome<T> = {

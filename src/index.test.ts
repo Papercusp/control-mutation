@@ -101,4 +101,11 @@ describe('runControlMutation — D-005 four guarantees', () => {
     expect(out.applied).toBe(true);
     expect(out.auditId).toBeUndefined();
   });
+
+  it('records an explicit source audit id for a durable revert mutation', async () => {
+    const { spec } = numberSpec({ action: 'test:set:revert', revertOf: 'aud-source' });
+    const { rows, deps } = fakeAudit();
+    await runControlMutation(spec, {}, deps);
+    expect(rows[0]).toMatchObject({ action: 'test:set:revert', revertOf: 'aud-source' });
+  });
 });
